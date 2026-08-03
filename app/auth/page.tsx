@@ -15,7 +15,7 @@ const Login = () => {
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
     if (token) {
-      router.replace("/");
+      router.replace("/dashboard");
     }
   }, [router]);
 
@@ -29,7 +29,7 @@ const Login = () => {
 
         const result = await loginAPI(apiPayload);
         setLogin(result.token, apiPayload.username);
-        router.replace("/");
+        router.replace("/dashboard");
 
       } else {
         const apiPayload: RegisterRequest = {
