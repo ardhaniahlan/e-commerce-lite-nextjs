@@ -4,6 +4,7 @@ import SidebarFilter from "@/features/product/components/SidebarFilter";
 import TopBarDashboard from "@/features/product/components/TopBarDashboard";
 import { getProductsAPI } from "@/features/product/services/productService";
 import { Product } from "@/features/product/types/product.types";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const Dashboard = () => {
@@ -16,6 +17,9 @@ const Dashboard = () => {
   const [sortOption, setSortOption] = useState("featured");
 
   const [selectedRating, setSelectedRating] = useState(0);
+
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("search") || "";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,12 +52,13 @@ const Dashboard = () => {
   }
 
   const filteredProducts = products.filter((product) => {
-    const matchesCategory =
-      selectedCategory === "" || product.category === selectedCategory;
+    const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          product.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === "" || product.category === selectedCategory;
     const matchesPrice = product.price <= priceRange;
     const matchesRating = (product.rating?.rate || 0) >= selectedRating;
 
-    return matchesCategory && matchesPrice && matchesRating;
+    return matchesSearch && matchesCategory && matchesPrice && matchesRating;
   });
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -99,6 +104,10 @@ const Dashboard = () => {
               <p className="text-lg font-medium">
                 Tidak ada produk yang sesuai dengan filter.
               </p>
+            </div>
+          ) : sortedProducts.length === 0 ? (
+            <div className="text-center py-20 text-gray-400">
+              <p className="text-lg font-medium">Produk &quot;{searchQuery}&quot; tidak ditemukan.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
