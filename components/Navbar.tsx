@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/features/auth/stores/authStore";
+import { useWishlistStore } from "@/features/product/stores/wishlistStore";
 
 const Navbar = () => {
   const cartItemsCount = 2;
@@ -11,6 +12,9 @@ const Navbar = () => {
 
   const user = useAuthStore((state) => state.user);
   const setLogout = useAuthStore((state) => state.setLogout);
+
+  const wishlistItems = useWishlistStore((state) => state.items);
+  const wishlistCount = wishlistItems.length;
 
   const [isDesktopDropdownOpen, setIsDesktopDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -201,6 +205,20 @@ const Navbar = () => {
                   {username}
                 </p>
               </div>
+              <div className="py-1">
+                <Link
+                  href="/wishlist"
+                  onClick={() => setIsDesktopDropdownOpen(false)}
+                  className="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                >
+                  <span>Wishlist</span>
+                  {wishlistCount > 0 && (
+                    <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">
+                      {wishlistCount}
+                    </span>
+                  )}
+                </Link>
+              </div>
               <div className="pt-1">
                 <button
                   onClick={handleLogout}
@@ -282,6 +300,18 @@ const Navbar = () => {
               className="text-sm font-semibold text-blue-700 py-2 px-3 rounded-lg bg-blue-50 transition-colors"
             >
               Shop / Dashboard
+            </Link>
+            <Link
+              href="/wishlist"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center justify-between text-sm font-semibold text-gray-700 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <span>Wishlist Saya</span>
+              {wishlistCount > 0 && (
+                <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">
+                  {wishlistCount}
+                </span>
+              )}
             </Link>
           </div>
 

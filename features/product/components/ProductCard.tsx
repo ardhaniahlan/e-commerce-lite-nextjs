@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Product } from "../types/product.types";
+import { useWishlistStore } from "../stores/wishlistStore";
 
 interface ProductCardProps {
   product: Product;
@@ -9,10 +10,45 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const ratingValue = product.rating?.rate || 0;
   const reviewCount = product.rating?.count || 0;
 
+  const { items, addToWishlist, removeFromWishlist } = useWishlistStore();
+  const isWishlisted = items.some((item) => item.id === product.id);
+
+  const handleWishlistClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isWishlisted) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+    }
+  };
+
   return (
     <Link href={`/products/${product.id}`} className="group block">
       <div className="group bg-white rounded-2xl overflow-hidden cursor-pointer flex flex-col transition-all duration-300 hover:shadow-md border border-transparent hover:border-gray-100">
         <div className="relative w-full aspect-4/5 bg-gray-50 overflow-hidden p-4 flex items-center justify-center">
+          <button
+            onClick={handleWishlistClick}
+            className={`absolute top-3 right-3 z-10 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm transition-colors ${
+              isWishlisted ? "text-red-500" : "text-gray-400 hover:text-red-500"
+            }`}
+            aria-label="Wishlist button"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill={isWishlisted ? "currentColor" : "none"}
+              stroke="currentColor"
+              strokeWidth={2}
+              className="w-4 h-4"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+              />
+            </svg>
+          </button>
+
           <img
             src={product.image}
             alt={product.title}
