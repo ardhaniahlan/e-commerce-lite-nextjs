@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import { Toaster } from "sonner";
 
 export default function ProtectedLayout({
   children,
@@ -33,6 +34,7 @@ export default function ProtectedLayout({
     <>
       <Navbar />
       {children}
+      <Toaster position="top-center"/>
     </>
   );
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Product } from "../types/product.types";
 import { useWishlistStore } from "../stores/wishlistStore";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   product: Product;
@@ -17,8 +18,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
     e.preventDefault();
     if (isWishlisted) {
       removeFromWishlist(product.id);
+      toast.error("Produk dihapus dari wishlist");
     } else {
       addToWishlist(product);
+      toast.success("Produk berhasil ditambahkan ke wishlist!");
     }
   };
 

@@ -6,6 +6,8 @@ import Link from "next/link";
 import { Product } from "@/features/product/types/product.types";
 import { getProductByIdAPI } from "@/features/product/services/productService";
 import { useWishlistStore } from "@/features/product/stores/wishlistStore";
+import { useCartStore } from "@/features/product/stores/cartStore";
+import { toast } from "sonner";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -17,6 +19,9 @@ export default function ProductDetailPage() {
 
   const [quantity, setQuantity] = useState(1);
 
+  const { addToCart } = useCartStore();
+  const [isAdded, setIsAdded] = useState(false);
+
   const { items, addToWishlist, removeFromWishlist } = useWishlistStore();
   const isWishlisted = product
     ? items.some((item) => item.id === product.id)
@@ -26,9 +31,19 @@ export default function ProductDetailPage() {
     if (!product) return;
     if (isWishlisted) {
       removeFromWishlist(product.id);
+      toast.error("Produk dihapus dari wishlist");
     } else {
       addToWishlist(product);
+      toast.success("Produk berhasil ditambahkan ke wishlist!");
     }
+  };
+
+  const handleAddToCart = () => {
+    if (!product) return;
+    addToCart(product, quantity);
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 2000);
+    toast.success("Produk berhasil ditambahkan ke keranjang!");
   };
 
   useEffect(() => {
@@ -196,22 +211,11 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          <button className="w-full bg-[#0044CC] text-white font-bold py-4 px-6 rounded-2xl hover:bg-blue-800 transition-all shadow-md flex items-center justify-center gap-3 mb-6">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.8}
-              stroke="currentColor"
-              className="w-5 h-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
-              />
-            </svg>
-            ADD TO BAG
+          <button
+            onClick={handleAddToCart}
+            className="w-full bg-[#0044CC] text-white font-bold py-4 px-6 rounded-2xl hover:bg-blue-800 transition-all shadow-md flex items-center justify-center gap-3 mb-6"
+          >
+            {isAdded ? "BERHASIL DITAMBAHKAN!" : "ADD TO BAG"}
           </button>
 
           <div className="flex items-center justify-center gap-8 text-xs text-gray-400 font-medium pt-2 border-t border-gray-100">

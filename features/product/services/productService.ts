@@ -19,3 +19,4 @@ export const getProductByIdAPI = async (id: string | number): Promise<Product> =
     throw new Error(error.response?.data || "Gagal mengambil detail produk");
   }
 };
+

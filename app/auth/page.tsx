@@ -6,6 +6,7 @@ import { loginAPI, LoginRequest, registerAPI, RegisterRequest } from "@/features
 import { useAuthStore } from "@/features/auth/stores/authStore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const Login = () => {
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -39,13 +40,13 @@ const Login = () => {
         };
         
         await registerAPI(apiPayload);
-        alert("Registrasi sukses! Silakan login.");
+        toast.success("Registrasi sukses! Silakan login.");
         
         setMode("login"); 
       }
     } catch (error) {
       console.error("Authentication failed:", error);
-      alert("Terjadi kesalahan, silakan periksa kembali datamu.");
+      toast.error("Terjadi kesalahan, silakan periksa kembali datamu.");
     }
   };
 
