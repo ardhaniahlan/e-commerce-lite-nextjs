@@ -3,12 +3,14 @@
 import AuthForm from "@/features/auth/components/AuthForm";
 import { AuthFormData } from "@/features/auth/schema/authSchema";
 import { loginAPI, LoginRequest, registerAPI, RegisterRequest } from "@/features/auth/services/authService";
+import { useAuthStore } from "@/features/auth/stores/authStore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const Login = () => {
   const [mode, setMode] = useState<"login" | "register">("login");
   const router = useRouter();
+  const setLogin = useAuthStore((state) => state.setLogin);
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
@@ -26,9 +28,7 @@ const Login = () => {
         };
 
         const result = await loginAPI(apiPayload);
-        console.log("Token berhasil didapatkan:", result.token);
-        
-        localStorage.setItem("auth_token", result.token);
+        setLogin(result.token, apiPayload.username);
         router.replace("/");
 
       } else {
