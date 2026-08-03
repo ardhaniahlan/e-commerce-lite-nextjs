@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/features/auth/stores/authStore";
 import { useWishlistStore } from "@/features/product/stores/wishlistStore";
 import { useCartStore } from "@/features/product/stores/cartStore";
@@ -27,6 +27,9 @@ const Navbar = () => {
 
   const searchParams = useSearchParams();
   const currentSearch = searchParams.get("search") || "";
+
+  const pathname = usePathname();
+  const isCartPage = pathname === "/cart";
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value;
@@ -97,7 +100,7 @@ const Navbar = () => {
           )}
         </button>
 
-        <Link href="/" className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <div className="w-8 h-8 flex items-center justify-center text-blue-700">
             <svg
               fill="none"
@@ -116,7 +119,7 @@ const Navbar = () => {
           <span className="text-blue-700 font-bold text-xl tracking-wide">
             LITE
           </span>
-        </Link>
+        </div>
 
         <div className="hidden md:flex items-center">
           <Link
@@ -128,33 +131,35 @@ const Navbar = () => {
         </div>
       </div>
 
-      <div className="flex-1 max-w-2xl mx-8 hidden md:block">
-        <div className="relative flex items-center w-full h-10 rounded-lg bg-[#F1F4FC] overflow-hidden focus-within:ring-2 focus-within:ring-blue-100 transition-all">
-          <div className="grid place-items-center h-full w-12 text-gray-400">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
+      {!isCartPage && (
+        <div className="flex-1 max-w-2xl mx-8 hidden md:block">
+          <div className="relative flex items-center w-full h-10 rounded-lg bg-[#F1F4FC] overflow-hidden focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+            <div className="grid place-items-center h-full w-12 text-gray-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <input
+              className="peer h-full w-full outline-none text-sm text-gray-700 bg-transparent pr-2"
+              type="text"
+              placeholder="Search products..."
+              defaultValue={currentSearch}
+              onChange={handleSearchChange}
+            />
           </div>
-          <input
-            className="peer h-full w-full outline-none text-sm text-gray-700 bg-transparent pr-2"
-            type="text"
-            placeholder="Search products..."
-            defaultValue={currentSearch}
-            onChange={handleSearchChange}
-          />
         </div>
-      </div>
+      )}
 
       <div className="flex items-center gap-4 md:gap-5">
         <Link
@@ -249,7 +254,7 @@ const Navbar = () => {
       </div>
 
       {isMobileMenuOpen && (
-        <div className="absolute top-16 left-0 w-full bg-white border-b border-gray-100 shadow-xl py-6 px-6 flex flex-col gap-5 md:hidden z-40 animate-in slide-in-from-top duration-200">
+        <div className="absolute top-16 left-0 w-full bg-white border-b border-gray-100 shadow-xl py-6 px-6 flex flex-col gap-5  z-40 animate-in slide-in-from-top duration-200">
           <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
             <div className="h-10 w-10 rounded-full overflow-hidden border border-gray-200">
               <img
@@ -266,31 +271,33 @@ const Navbar = () => {
             </div>
           </div>
 
-          <div className="relative flex items-center w-full h-10 rounded-lg bg-[#F1F4FC] overflow-hidden">
-            <div className="grid place-items-center h-full w-12 text-gray-400">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
+          {!isCartPage && (
+            <div className="relative flex items-center w-full h-10 rounded-lg bg-[#F1F4FC] overflow-hidden">
+              <div className="grid place-items-center h-full w-12 text-gray-400">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              <input
+                className="peer h-full w-full outline-none text-sm text-gray-700 bg-transparent pr-2"
+                type="text"
+                placeholder="Search products..."
+                defaultValue={currentSearch}
+                onChange={handleSearchChange}
+              />
             </div>
-            <input
-              className="peer h-full w-full outline-none text-sm text-gray-700 bg-transparent pr-2"
-              type="text"
-              placeholder="Search products..."
-              defaultValue={currentSearch}
-              onChange={handleSearchChange}
-            />
-          </div>
+          )}
 
           <div className="flex flex-col gap-2">
             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
