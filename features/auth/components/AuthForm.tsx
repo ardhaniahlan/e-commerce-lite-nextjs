@@ -1,17 +1,27 @@
-import { AuthFormData, loginSchema, registerSchema } from "../schema/authSchema";
+import { useEffect } from "react";
+import {
+  AuthFormData,
+  loginSchema,
+  registerSchema,
+} from "../schema/authSchema";
+import {
+  loginAPI,
+  LoginRequest,
+  registerAPI,
+  RegisterRequest,
+} from "../services/authService";
 import InputField from "./InputField";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Resolver, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 interface AuthFormProps {
   mode?: "login" | "register";
-  onSubmit?: (data: AuthFormData) => void;
+  onSubmit: (data: AuthFormData) => void;
 }
 
 const AuthForm = ({ mode = "login", onSubmit }: AuthFormProps) => {
   const isLogin = mode === "login";
   const currentSchema = isLogin ? loginSchema : registerSchema;
-
   const {
     register,
     handleSubmit,
@@ -21,9 +31,12 @@ const AuthForm = ({ mode = "login", onSubmit }: AuthFormProps) => {
     resolver: zodResolver(currentSchema) as any,
   });
 
-  const submitHandler = (data: AuthFormData) => {
-    onSubmit?.(data);
+  useEffect(() => {
     reset();
+  }, [mode, reset]);
+
+  const handleInternalSubmit = (data: AuthFormData) => {
+    onSubmit(data);
   };
 
   return (
@@ -37,11 +50,10 @@ const AuthForm = ({ mode = "login", onSubmit }: AuthFormProps) => {
           : "Fill in the details to get started."}
       </p>
 
-      <form onSubmit={handleSubmit(submitHandler)}>
+      <form onSubmit={handleSubmit(handleInternalSubmit)}>
         {!isLogin && (
           <InputField
             label="Username"
-            name="username"
             type="text"
             placeholder="janedoe"
             register={register("username")}
@@ -51,7 +63,6 @@ const AuthForm = ({ mode = "login", onSubmit }: AuthFormProps) => {
 
         <InputField
           label={isLogin ? "Username or Email" : "Email"}
-          name={isLogin ? "identifier" : "email"}
           type={isLogin ? "text" : "email"}
           placeholder={isLogin ? "janedoe or jane@mail.com" : "jane@mail.com"}
           register={register(isLogin ? "identifier" : "email")}
@@ -60,10 +71,8 @@ const AuthForm = ({ mode = "login", onSubmit }: AuthFormProps) => {
 
         <InputField
           label="Password"
-          name="password"
           type="password"
           placeholder="••••••••"
-          rightElement={isLogin ? "Forgot?" : null}
           register={register("password")}
           error={errors.password}
         />

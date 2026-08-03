@@ -1,10 +1,53 @@
 "use client";
 
 import AuthForm from "@/features/auth/components/AuthForm";
-import { useState } from "react";
+import { AuthFormData } from "@/features/auth/schema/authSchema";
+import { loginAPI, LoginRequest, registerAPI, RegisterRequest } from "@/features/auth/services/authService";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Login = () => {
   const [mode, setMode] = useState<"login" | "register">("login");
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("auth_token");
+    if (token) {
+      router.replace("/");
+    }
+  }, [router]);
+
+  const handleAuthSubmit = async (data: AuthFormData) => {
+    try {
+      if (mode === "login") {
+        const apiPayload: LoginRequest = {
+          username: data.identifier || "",
+          password: data.password,
+        };
+
+        const result = await loginAPI(apiPayload);
+        console.log("Token berhasil didapatkan:", result.token);
+        
+        localStorage.setItem("auth_token", result.token);
+        router.replace("/");
+
+      } else {
+        const apiPayload: RegisterRequest = {
+          username: data.username || "",
+          email: data.email || "",
+          password: data.password,
+        };
+        
+        await registerAPI(apiPayload);
+        alert("Registrasi sukses! Silakan login.");
+        
+        setMode("login"); 
+      }
+    } catch (error) {
+      console.error("Authentication failed:", error);
+      alert("Terjadi kesalahan, silakan periksa kembali datamu.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#F8FAFF] flex flex-col items-center justify-center p-4 font-sans">
@@ -38,12 +81,7 @@ const Login = () => {
         </button>
       </div>
 
-      <AuthForm 
-        mode={mode} 
-        onSubmit={(data) => {
-          console.log(`Submit data untuk: ${mode}`, data);
-        }} 
-      />
+      <AuthForm mode={mode} onSubmit={handleAuthSubmit}/>
     </div>
   );
 };
