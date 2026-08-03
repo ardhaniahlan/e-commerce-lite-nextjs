@@ -10,3 +10,12 @@ export const getProductsAPI = async (): Promise<Product[]> => {
     throw new Error("Gagal mengambil data produk");
   }
 };
+
+export const getProductByIdAPI = async (id: string | number): Promise<Product> => {
+  try {
+    const response = await apiClient.get(`/products/${id}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data || "Gagal mengambil detail produk");
+  }
+};

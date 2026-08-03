@@ -267,6 +267,8 @@ const Navbar = () => {
               className="peer h-full w-full outline-none text-sm text-gray-700 bg-transparent pr-2"
               type="text"
               placeholder="Search products..."
+              defaultValue={currentSearch}
+              onChange={handleSearchChange}
             />
           </div>
 
