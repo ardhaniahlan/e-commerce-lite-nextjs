@@ -29,7 +29,7 @@ const Navbar = () => {
   const currentSearch = searchParams.get("search") || "";
 
   const pathname = usePathname();
-  const isCartPage = pathname === "/cart";
+  const isCartPage = pathname === "/cart" || "/shipping" || "/payment";
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value;
