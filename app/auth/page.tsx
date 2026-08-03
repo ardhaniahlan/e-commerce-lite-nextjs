@@ -40,9 +40,8 @@ const Login = () => {
 
       <AuthForm 
         mode={mode} 
-        onSubmit={(e) => {
-          e.preventDefault();
-          console.log(`Submit data untuk: ${mode}`);
+        onSubmit={(data) => {
+          console.log(`Submit data untuk: ${mode}`, data);
         }} 
       />
     </div>

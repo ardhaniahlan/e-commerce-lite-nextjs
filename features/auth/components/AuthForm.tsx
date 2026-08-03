@@ -1,12 +1,30 @@
+import { AuthFormData, loginSchema, registerSchema } from "../schema/authSchema";
 import InputField from "./InputField";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Resolver, useForm } from "react-hook-form";
 
 interface AuthFormProps {
   mode?: "login" | "register";
-  onSubmit?: (e: React.FormEvent) => void;
+  onSubmit?: (data: AuthFormData) => void;
 }
 
 const AuthForm = ({ mode = "login", onSubmit }: AuthFormProps) => {
   const isLogin = mode === "login";
+  const currentSchema = isLogin ? loginSchema : registerSchema;
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<AuthFormData>({
+    resolver: zodResolver(currentSchema) as any,
+  });
+
+  const submitHandler = (data: AuthFormData) => {
+    onSubmit?.(data);
+    reset();
+  };
 
   return (
     <div className="bg-white p-8 rounded-2xl shadow-sm max-w-md w-full">
@@ -19,13 +37,15 @@ const AuthForm = ({ mode = "login", onSubmit }: AuthFormProps) => {
           : "Fill in the details to get started."}
       </p>
 
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit(submitHandler)}>
         {!isLogin && (
           <InputField
             label="Username"
             name="username"
             type="text"
             placeholder="janedoe"
+            register={register("username")}
+            error={errors.username}
           />
         )}
 
@@ -34,6 +54,8 @@ const AuthForm = ({ mode = "login", onSubmit }: AuthFormProps) => {
           name={isLogin ? "identifier" : "email"}
           type={isLogin ? "text" : "email"}
           placeholder={isLogin ? "janedoe or jane@mail.com" : "jane@mail.com"}
+          register={register(isLogin ? "identifier" : "email")}
+          error={isLogin ? errors.identifier : errors.email}
         />
 
         <InputField
@@ -42,6 +64,8 @@ const AuthForm = ({ mode = "login", onSubmit }: AuthFormProps) => {
           type="password"
           placeholder="••••••••"
           rightElement={isLogin ? "Forgot?" : null}
+          register={register("password")}
+          error={errors.password}
         />
 
         <button
