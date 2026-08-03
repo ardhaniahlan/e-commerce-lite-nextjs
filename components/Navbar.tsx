@@ -43,7 +43,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     setLogout();
-    router.replace("/auth");
+    router.replace("/");
   };
 
   useEffect(() => {
