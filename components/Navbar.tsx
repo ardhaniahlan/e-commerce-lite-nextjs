@@ -6,6 +6,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/features/auth/stores/authStore";
 import { useWishlistStore } from "@/features/product/stores/wishlistStore";
 import { useCartStore } from "@/features/product/stores/cartStore";
+import { useDebounce } from "@/hooks/useDebounce";
+import apiClient from "@/lib/axios";
 
 const Navbar = () => {
   const router = useRouter();
@@ -27,6 +29,30 @@ const Navbar = () => {
 
   const searchParams = useSearchParams();
   const currentSearch = searchParams.get("search") || "";
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const debouncedSearch = useDebounce(searchQuery, 500);
+
+  useEffect(() => {
+    const fetchResults = async () => {
+      if (debouncedSearch.trim().length > 0) {
+        try {
+          const response = await apiClient.get('/products');
+          const filtered = response.data.filter((item: any) =>
+            item.title.toLowerCase().includes(debouncedSearch.toLowerCase())
+          );
+          setSearchResults(filtered);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      } else {
+        setSearchResults([]);
+      }
+    };
+
+    fetchResults();
+  }, [debouncedSearch]);
 
   const pathname = usePathname();
   const isCartPage = pathname === "/cart" || pathname === "/shipping" || pathname === "/payment";
